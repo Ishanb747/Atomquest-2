@@ -41,7 +41,10 @@ export const useSessionStore = create<SessionState>((set) => ({
     try {
       const headers = getAuthHeaders();
       const res = await axios.post(`${API_BASE}/api/sessions`, {}, { headers });
-      const { sessionId, inviteToken, inviteUrl } = res.data;
+      const { sessionId, inviteToken } = res.data;
+      const inviteUrl = typeof window !== 'undefined'
+        ? `${window.location.origin}/join/${inviteToken}`
+        : `${API_BASE}/join/${inviteToken}`;
       set({ isLoading: false, inviteUrl });
       return { sessionId, inviteToken, inviteUrl };
     } catch (err: any) {

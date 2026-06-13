@@ -15,7 +15,6 @@ import { LiveKitRoom } from '@livekit/components-react';
 import '@livekit/components-styles';
 
 const API_BASE = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:4000';
-const WEB_ORIGIN = process.env.NEXT_PUBLIC_WEB_ORIGIN || 'http://localhost:3000';
 const LIVEKIT_URL = process.env.NEXT_PUBLIC_LIVEKIT_URL;
 
 function AgentCallRoomContent() {
@@ -39,10 +38,11 @@ function AgentCallRoomContent() {
         // Fetch session details to recover inviteUrl if navigated directly
         const sessionRes = await axios.get(`${API_BASE}/api/sessions/${id}`, { headers });
         if (sessionRes.data.inviteToken) {
-          const url = `${WEB_ORIGIN}/join/${sessionRes.data.inviteToken}`;
+          const origin = window.location.origin;
+          const url = `${origin}/join/${sessionRes.data.inviteToken}`;
           setInviteUrl(url);
-          setShowInvitePrompt(true);
         }
+        setShowInvitePrompt(true);
       } catch (err) {
         addToast('Failed to connect to room', 'error');
       }
