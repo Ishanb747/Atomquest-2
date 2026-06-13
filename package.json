@@ -1,0 +1,17 @@
+{
+  "name": "atomquest",
+  "version": "1.0.0",
+  "private": true,
+  "scripts": {
+    "dev": "pnpm --parallel -r dev",
+    "dev:server": "pnpm --filter @atomquest/server dev",
+    "dev:web": "pnpm --filter @atomquest/web dev",
+    "db:setup": "pnpm --filter @atomquest/server db:setup",
+    "db:migrate": "pnpm --filter @atomquest/server db:migrate",
+    "db:generate": "pnpm --filter @atomquest/server db:generate",
+    "lint": "pnpm -r lint"
+  },
+  "engines": {
+    "node": ">=18.0.0"
+  }
+}

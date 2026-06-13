@@ -1,0 +1,54 @@
+services:
+  # ---------------------------------------------------------
+  # BACKEND (Express / Prisma)
+  # ---------------------------------------------------------
+  - type: web
+    name: atomquest-server
+    env: node
+    region: ohio # Change this if needed
+    buildCommand: pnpm install && pnpm --filter @atomquest/server db:generate && pnpm --filter @atomquest/server build
+    startCommand: pnpm --filter @atomquest/server start
+    envVars:
+      # Required: You must enter your Neon PostgreSQL URL in the Render dashboard!
+      - key: DATABASE_URL
+        sync: false
+      
+      # Required: You must enter your LiveKit details in the Render dashboard!
+      - key: LIVEKIT_URL
+        sync: false
+      - key: LIVEKIT_API_KEY
+        sync: false
+      - key: LIVEKIT_API_SECRET
+        sync: false
+
+      # Automatically generated secure secret for JWTs
+      - key: JWT_SECRET
+        generateValue: true
+
+      # Allow frontend to communicate with backend
+      - key: CORS_ORIGIN
+        fromService:
+          type: web
+          name: atomquest-web
+          property: url
+
+  # ---------------------------------------------------------
+  # FRONTEND (Next.js)
+  # ---------------------------------------------------------
+  - type: web
+    name: atomquest-web
+    env: node
+    region: ohio
+    buildCommand: pnpm install && pnpm --filter @atomquest/web build
+    startCommand: pnpm --filter @atomquest/web start
+    envVars:
+      # Automatically points to the backend server deployed above
+      - key: NEXT_PUBLIC_API_URL
+        fromService:
+          type: web
+          name: atomquest-server
+          property: url
+          
+      # Required: Enter your LiveKit WebSocket URL (wss://...) in the Render dashboard!
+      - key: NEXT_PUBLIC_LIVEKIT_URL
+        sync: false

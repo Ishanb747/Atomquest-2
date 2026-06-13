@@ -1,0 +1,71 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+enum Role {
+  AGENT
+  CUSTOMER
+}
+
+enum SessionStatus {
+  ACTIVE
+  ENDED
+}
+
+enum RecordingStatus {
+  RECORDING
+  PROCESSING
+  READY
+}
+
+model Session {
+  id          String        @id @default(uuid())
+  agentId     String
+  status      SessionStatus @default(ACTIVE)
+  inviteToken String        @unique @default(uuid())
+  createdAt   DateTime      @default(now())
+  endedAt     DateTime?
+
+  participants Participant[]
+  messages     Message[]
+  recordings   Recording[]
+}
+
+model Participant {
+  id        String   @id @default(uuid())
+  sessionId String
+  role      Role
+  joinedAt  DateTime @default(now())
+  leftAt    DateTime?
+
+  session Session @relation(fields: [sessionId], references: [id], onDelete: Cascade)
+}
+
+model Message {
+  id        String   @id @default(uuid())
+  sessionId String
+  senderId  String
+  role      Role
+  content   String
+  fileUrl   String?
+  fileType  String?
+  fileName  String?
+  createdAt DateTime @default(now())
+
+  session Session @relation(fields: [sessionId], references: [id], onDelete: Cascade)
+}
+
+model Recording {
+  id        String          @id @default(uuid())
+  sessionId String
+  status    RecordingStatus @default(RECORDING)
+  fileUrl   String?
+  createdAt DateTime        @default(now())
+
+  session Session @relation(fields: [sessionId], references: [id], onDelete: Cascade)
+}
