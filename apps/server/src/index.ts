@@ -1,8 +1,7 @@
 import 'dotenv/config';
-import express from 'express';
+import express, { Application, Request, Response, NextFunction } from 'express';
 import cors from 'cors';
 import { createServer } from 'http';
-import { Server } from 'socket.io';
 import path from 'path';
 import fs from 'fs';
 import authRoutes from './routes/auth.js';
@@ -10,7 +9,7 @@ import sessionRoutes from './routes/sessions.js';
 import adminRoutes from './routes/admin.js';
 import { register, errorsTotalCounter } from './lib/metrics.js';
 
-const app = express();
+const app: Application = express();
 const httpServer = createServer(app);
 
 const PORT = parseInt(process.env.PORT || '4000', 10);
