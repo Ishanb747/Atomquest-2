@@ -13,8 +13,8 @@ const Glass = forwardRef<HTMLDivElement, GlassProps>(
       <div
         ref={ref}
         className={cn(
-          'bg-bg-float/70 backdrop-blur-glass border border-bg-border/60',
-          'shadow-float rounded-xl',
+          'bg-bg-float/60 backdrop-blur-glass border border-bg-border/50',
+          'shadow-float rounded-2xl',
           className
         )}
         {...props}
