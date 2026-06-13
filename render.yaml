@@ -27,10 +27,7 @@ services:
 
       # Allow frontend to communicate with backend
       - key: CORS_ORIGIN
-        fromService:
-          type: web
-          name: atomquest-web
-          property: url
+        value: "*"
 
   # ---------------------------------------------------------
   # FRONTEND (Next.js)
@@ -42,12 +39,9 @@ services:
     buildCommand: pnpm install && pnpm --filter @atomquest/web build
     startCommand: pnpm --filter @atomquest/web start
     envVars:
-      # Automatically points to the backend server deployed above
+      # Required: Enter the backend server URL manually (e.g. https://atomquest-server.onrender.com)
       - key: NEXT_PUBLIC_API_URL
-        fromService:
-          type: web
-          name: atomquest-server
-          property: url
+        sync: false
           
       # Required: Enter your LiveKit WebSocket URL (wss://...) in the Render dashboard!
       - key: NEXT_PUBLIC_LIVEKIT_URL
