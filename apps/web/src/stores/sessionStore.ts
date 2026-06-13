@@ -25,7 +25,7 @@ interface SessionState {
   fetchSession: (id: string) => Promise<void>;
   endSession: (id: string) => Promise<void>;
   joinSession: (sessionId: string, inviteToken: string) => Promise<{ token: string; sessionId: string }>;
-  setInviteUrl: (url: string) => void;
+  setInviteUrl: (_url: string) => void;
   clearCurrent: () => void;
 }
 

@@ -7,7 +7,7 @@ import { Participant, Track } from 'livekit-client';
 import { useIsSpeaking, useIsMuted, VideoTrack, TrackReferenceOrPlaceholder } from '@livekit/components-react';
 
 interface VideoTileProps {
-  participant: Participant;
+  participant?: Participant;
   trackRef?: TrackReferenceOrPlaceholder;
   initials?: string;
   name?: string;
@@ -15,20 +15,70 @@ interface VideoTileProps {
   isLocal?: boolean;
   mirrored?: boolean;
   fullscreen?: boolean;
+  isMuted?: boolean;
+  isSpeaking?: boolean;
 }
 
-export function VideoTile({
+function LiveKitTile({
   participant,
   trackRef,
-  initials = '?',
+  initials,
+  name,
+  isActive,
+  isLocal,
+  mirrored,
+  fullscreen,
+  isMuted: isMutedProp,
+  isSpeaking: isSpeakingProp,
+}: VideoTileProps) {
+  const livekitIsSpeaking = useIsSpeaking(participant!);
+  const micTrackRef: TrackReferenceOrPlaceholder = { participant: participant!, source: Track.Source.Microphone };
+  const livekitIsMuted = useIsMuted(micTrackRef);
+  return (
+    <TileInner
+      name={name}
+      initials={initials}
+      isActive={isActive}
+      isLocal={isLocal}
+      mirrored={mirrored}
+      fullscreen={fullscreen}
+      isMuted={livekitIsMuted}
+      isSpeaking={livekitIsSpeaking}
+      trackRef={trackRef}
+    />
+  );
+}
+
+export function VideoTile(props: VideoTileProps) {
+  if (props.participant) {
+    return <LiveKitTile {...props} />;
+  }
+  return (
+    <TileInner
+      name={props.name}
+      initials={props.initials}
+      isActive={props.isActive}
+      isLocal={props.isLocal}
+      mirrored={props.mirrored}
+      fullscreen={props.fullscreen}
+      isMuted={props.isMuted ?? false}
+      isSpeaking={props.isSpeaking ?? false}
+      trackRef={props.trackRef}
+    />
+  );
+}
+
+function TileInner({
   name = 'Participant',
+  initials = '?',
   isActive = false,
   isLocal = false,
   mirrored = false,
   fullscreen = false,
-}: VideoTileProps) {
-  const isSpeaking = useIsSpeaking(participant);
-  const isMuted = useIsMuted(Track.Source.Microphone, { participant });
+  isMuted = false,
+  isSpeaking = false,
+  trackRef,
+}: Omit<VideoTileProps, 'participant'> & { isMuted: boolean; isSpeaking: boolean }) {
   const hasVideo = trackRef?.publication?.isSubscribed && trackRef?.participant?.isCameraEnabled;
 
   return (
@@ -57,7 +107,7 @@ export function VideoTile({
       {/* Video element managed by LiveKit */}
       {hasVideo && trackRef && (
         <VideoTrack
-          trackRef={trackRef}
+          trackRef={trackRef as any}
           className={cn(
             'w-full h-full object-cover',
             mirrored && 'scale-x-[-1]'
